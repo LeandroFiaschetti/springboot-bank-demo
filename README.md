@@ -22,6 +22,14 @@
 	"password": "admin"
 }
 ```
+### Default created login user
+```json
+{
+	"mail": "leandrofiaschetti@gmail.com",
+	"password": "admin"
+}
+```
+
 ### CustomerDTO
 ```json
 {
