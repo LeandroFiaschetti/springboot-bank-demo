@@ -9,15 +9,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "deposit_operation")
-@DiscriminatorValue(value = OperationType.Types.DEPOSIT_OPERATION)
-public class DepositOperation extends Operation {
+@Table(name = "withdrawal_operation")
+@DiscriminatorValue(value = OperationType.Types.WITDRAWAL_OPERATION)
+public class WithdrawalOperation extends Operation {
 
-    public DepositOperation() {
+    public WithdrawalOperation() {
         super();
     }
 
-    public DepositOperation(Date operationDate, String description, BigDecimal amount, Account account) {
+    public WithdrawalOperation(Date operationDate, String description, BigDecimal amount, Account account) {
         super(operationDate, description, amount, account);
     }
 

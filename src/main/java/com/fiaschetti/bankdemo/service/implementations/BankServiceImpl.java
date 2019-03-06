@@ -1,16 +1,21 @@
-package com.fiaschetti.bankdemo.service;
+package com.fiaschetti.bankdemo.service.implementations;
 
 import com.fiaschetti.bankdemo.exception.BankRequestException;
 import com.fiaschetti.bankdemo.model.*;
+import com.fiaschetti.bankdemo.service.interfaces.AccountService;
+import com.fiaschetti.bankdemo.service.interfaces.BankService;
+import com.fiaschetti.bankdemo.service.interfaces.OperationService;
 import com.fiaschetti.bankdemo.validation.BankRequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class BankService {
+public class BankServiceImpl implements BankService {
 
     @Autowired
     private AccountService accountService;
@@ -21,7 +26,8 @@ public class BankService {
     @Autowired
     private BankRequestValidator bankRequestValidator;
 
-    public Operation depositToAccount(Customer customer, Long accountId, double amount) throws BankRequestException {
+    @Transactional
+    public Operation depositToAccount(Customer customer, Long accountId, BigDecimal amount) throws BankRequestException {
         Account currentAcc = accountService.getAccountById(accountId);
         DepositOperation depositOperation = new DepositOperation(new Date(), "deposit by "
                 + customer.getLastName() + " " + customer.getFirstName(), amount, currentAcc);
@@ -31,16 +37,18 @@ public class BankService {
         return o;
     }
 
-    public Operation withdrawFromAccount(Customer customer, Long accountId, double amount) throws BankRequestException {
+    @Transactional
+    public Operation withdrawFromAccount(Customer customer, Long accountId, BigDecimal amount) throws BankRequestException {
         Account currentAcc = accountService.getAccountById(accountId);
-        WithdrawOperation withdrawalOp = new WithdrawOperation(new Date(), "withdraw from cash machine", amount, currentAcc);
-        bankRequestValidator.validateWithdrawall(customer, withdrawalOp);
-        Operation o = operationService.addOperation(withdrawalOp);
+        WithdrawalOperation withdrawalOperation = new WithdrawalOperation(new Date(), "withdraw from cash machine", amount, currentAcc);
+        bankRequestValidator.validateWithdrawall(customer, withdrawalOperation);
+        Operation o = operationService.addOperation(withdrawalOperation);
         accountService.decreaseMoney(accountId, amount);
         return o;
     }
 
-    public void transfer(Customer customer, Long accountOriginId, Long accountDestId, double amount) throws BankRequestException {
+    @Transactional
+    public void transfer(Customer customer, Long accountOriginId, Long accountDestId, BigDecimal amount) throws BankRequestException {
         withdrawFromAccount(customer, accountOriginId, amount);
         depositToAccount(customer, accountDestId, amount);
     }

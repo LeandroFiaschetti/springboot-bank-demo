@@ -1,10 +1,11 @@
 package com.fiaschetti.bankdemo.dto;
+import java.math.BigDecimal;
 
 public class AccountDTO {
 
     private Long accountId;
     private String type;
-    private Double balance;
+    private BigDecimal balance;
     private Long ownerId;
 
     public Long getAccountId() {
@@ -23,11 +24,11 @@ public class AccountDTO {
         this.type = type;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

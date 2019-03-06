@@ -1,6 +1,6 @@
 package com.fiaschetti.bankdemo.web.controller;
 
-import com.fiaschetti.bankdemo.service.SecurityService;
+import com.fiaschetti.bankdemo.service.implementations.SecurityService;
 import com.fiaschetti.bankdemo.web.request.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +28,8 @@ public class AuthController {
         try {
             securityService.login(loginForm.getMail(), loginForm.getPassword());
             return ResponseEntity.ok("OK");
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.ok("Invalid Mail or Password");
         } catch (Exception e) {
-            return ResponseEntity.ok(e.toString());
+            return ResponseEntity.badRequest().body((e.toString()));
         }
 
     }
@@ -46,7 +44,7 @@ public class AuthController {
             }
             return ResponseEntity.ok("Not Logged");
         } catch (Exception e) {
-            return ResponseEntity.ok(e.toString());
+            return ResponseEntity.badRequest().body((e.toString()));
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.fiaschetti.bankdemo.model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -12,7 +13,7 @@ public class Operation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long idOperation;
+    private Long operationId;
 
     @Column(name = "date")
     private Date date;
@@ -21,7 +22,7 @@ public class Operation {
     private String description;
 
     @Column(name = "amount")
-    private double amount;
+    private BigDecimal amount;
 
     @ManyToOne
     @JoinColumn(name = "target_account", referencedColumnName = "account_id")
@@ -31,19 +32,19 @@ public class Operation {
 
     }
 
-    public Operation(Date date, String description, double amount, Account account) {
+    public Operation(Date date, String description, BigDecimal amount, Account account) {
         this.date = date;
         this.description = description;
         this.amount = amount;
         this.targetAccount = account;
     }
 
-    public Long getIdOperation() {
-        return idOperation;
+    public Long getOperationId() {
+        return operationId;
     }
 
-    public void setIdOperation(Long idOperation) {
-        this.idOperation = idOperation;
+    public void setOperationId(Long operationId) {
+        this.operationId = operationId;
     }
 
     public Date getDate() {
@@ -54,11 +55,11 @@ public class Operation {
         this.date = date;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

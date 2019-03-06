@@ -1,4 +1,4 @@
-package com.fiaschetti.bankdemo.service;
+package com.fiaschetti.bankdemo.service.implementations;
 
 import com.fiaschetti.bankdemo.model.Customer;
 import com.fiaschetti.bankdemo.repository.CustomerRepository;

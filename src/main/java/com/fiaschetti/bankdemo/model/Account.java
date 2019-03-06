@@ -1,6 +1,7 @@
 package com.fiaschetti.bankdemo.model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
@@ -16,7 +17,7 @@ public class Account {
     private String type;
 
     @Column(name = "balance")
-    private Double balance;
+    private BigDecimal balance;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -26,7 +27,7 @@ public class Account {
 
     }
 
-    public Account(String type, double balance, Customer owner) {
+    public Account(String type, BigDecimal balance, Customer owner) {
         this.type = type;
         this.balance = balance;
         this.owner = owner;
@@ -48,11 +49,11 @@ public class Account {
         this.type = type;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
@@ -70,7 +71,7 @@ public class Account {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Double.compare(account.balance, balance) == 0 &&
+        return Objects.equals(balance, account.balance) &&
                 Objects.equals(accountId, account.accountId) &&
                 Objects.equals(type, account.type) &&
                 Objects.equals(owner, account.owner);

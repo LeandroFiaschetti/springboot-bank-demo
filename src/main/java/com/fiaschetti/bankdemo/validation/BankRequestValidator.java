@@ -6,6 +6,8 @@ import com.fiaschetti.bankdemo.model.Customer;
 import com.fiaschetti.bankdemo.model.Operation;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public class BankRequestValidator {
 
@@ -16,7 +18,7 @@ public class BankRequestValidator {
     }
 
     public void validateDeposit(Customer customer, Operation operation) throws BankRequestException {
-        if (operation.getAmount() < 0) {
+        if (operation.getAmount().compareTo(BigDecimal.ZERO) < 0) {
             throw new BankRequestException("Can not deposit negative amount");
         }
     }
@@ -26,7 +28,7 @@ public class BankRequestValidator {
             throw new BankRequestException("The selected account does not belong to the user");
         }
 
-        if (operation.getTargetAccount().getBalance() - operation.getAmount() < 0) {
+        if (operation.getTargetAccount().getBalance().subtract(operation.getAmount()).compareTo(BigDecimal.ZERO) < 0) {
             throw new BankRequestException("Does not have enough money");
         }
     }

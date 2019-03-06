@@ -1,12 +1,15 @@
 package com.fiaschetti.bankdemo.model;
 
+import com.fiaschetti.bankdemo.enums.OperationType;
+
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "transfer_operation")
-@DiscriminatorValue(value = "TO")
+@DiscriminatorValue(value = OperationType.Types.TRANSFER_OPERATION)
 public class TransferOperation extends Operation {
 
     @ManyToOne
@@ -17,7 +20,7 @@ public class TransferOperation extends Operation {
         this.sourceAccount = sourceAccount;
     }
 
-    public TransferOperation(Date date, String description, double amount, Account account, Account sourceAccount) {
+    public TransferOperation(Date date, String description, BigDecimal amount, Account account, Account sourceAccount) {
         super(date, description, amount, account);
         this.sourceAccount = sourceAccount;
     }

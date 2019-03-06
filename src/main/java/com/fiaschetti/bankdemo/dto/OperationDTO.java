@@ -1,18 +1,21 @@
 package com.fiaschetti.bankdemo.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class OperationDTO {
 
     private Date date;
     private String description;
-    private double amount;
+    private BigDecimal amount;
 
     public OperationDTO() {
 
     }
 
-    public OperationDTO(Date date, String description, double amount) {
+    public OperationDTO(Date date, String description, BigDecimal amount) {
         this.date = date;
         this.description = description;
         this.amount = amount;
@@ -26,11 +29,11 @@ public class OperationDTO {
         this.date = date;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

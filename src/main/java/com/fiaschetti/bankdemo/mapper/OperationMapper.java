@@ -2,10 +2,10 @@ package com.fiaschetti.bankdemo.mapper;
 
 import com.fiaschetti.bankdemo.dto.DepositOperationDTO;
 import com.fiaschetti.bankdemo.dto.OperationDTO;
-import com.fiaschetti.bankdemo.dto.WithdrawOperationDTO;
+import com.fiaschetti.bankdemo.dto.WithdrawalOperationDTO;
 import com.fiaschetti.bankdemo.model.DepositOperation;
 import com.fiaschetti.bankdemo.model.Operation;
-import com.fiaschetti.bankdemo.model.WithdrawOperation;
+import com.fiaschetti.bankdemo.model.WithdrawalOperation;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,13 +23,13 @@ public interface OperationMapper {
     DepositOperationDTO depositOperationToDepositOperationDto(DepositOperation depositOperation);
 
     @Mapping(target = "description", source = "description")
-    WithdrawOperationDTO withdrawOperationToWithdrawOperationDto(WithdrawOperation withdrawOperation);
+    WithdrawalOperationDTO withdrawalOperationToWithdrawOperationDto(WithdrawalOperation withdrawOperation);
 
     @Named("mapOperationDTO")
     default OperationDTO toDto(Operation o) {
         if (o instanceof DepositOperation)
             return depositOperationToDepositOperationDto((DepositOperation) o);
-        return withdrawOperationToWithdrawOperationDto((WithdrawOperation) o);
+        return withdrawalOperationToWithdrawOperationDto((WithdrawalOperation) o);
     }
 
     @IterableMapping(qualifiedByName = "mapOperationDTO")

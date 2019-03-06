@@ -1,11 +1,13 @@
 package com.fiaschetti.bankdemo.web.request;
 
+import java.math.BigDecimal;
+
 public class DepositForm {
 
     private Long accountId;
-    private Double amount;
+    private BigDecimal amount;
 
-    public DepositForm(Long accountId, Double amount) {
+    public DepositForm(Long accountId, BigDecimal amount) {
         this.accountId = accountId;
         this.amount = amount;
     }
@@ -18,11 +20,11 @@ public class DepositForm {
         this.accountId = accountId;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 }

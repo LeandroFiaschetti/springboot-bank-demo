@@ -2,9 +2,9 @@ package com.fiaschetti.bankdemo;
 
 import com.fiaschetti.bankdemo.exception.BankRequestException;
 import com.fiaschetti.bankdemo.model.*;
-import com.fiaschetti.bankdemo.service.AccountService;
-import com.fiaschetti.bankdemo.service.BankService;
-import com.fiaschetti.bankdemo.service.CustomerService;
+import com.fiaschetti.bankdemo.service.interfaces.AccountService;
+import com.fiaschetti.bankdemo.service.interfaces.BankService;
+import com.fiaschetti.bankdemo.service.interfaces.CustomerService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +15,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class BankServiceTest {
     CustomerService customerService;
 
     @Before
-    public void setUp() {
+    public void setUp() throws BankRequestException {
         Customer c1 = new Customer();
         c1.setFirstName("N1");
         c1.setLastName("L1");
@@ -44,9 +45,10 @@ public class BankServiceTest {
 
         Account a1 = new Account();
         a1.setOwner(c1);
-        a1.setBalance(1000);
+        a1.setBalance(new BigDecimal(0));
         a1.setType("S");
-        accountService.addAccount(a1);
+        a1 = accountService.addAccount(a1);
+        bankService.depositToAccount(c1, a1.getAccountId(), new BigDecimal(1000));
 
         Customer c2 = new Customer();
         c2.setFirstName("N2");
@@ -57,21 +59,22 @@ public class BankServiceTest {
 
         Account a2 = new Account();
         a2.setOwner(c2);
-        a2.setBalance(1000);
+        a2.setBalance(new BigDecimal(0));
         a2.setType("S");
-        accountService.addAccount(a2);
+        a2 = accountService.addAccount(a2);
+        bankService.depositToAccount(c2, a2.getAccountId(), new BigDecimal(1000));
     }
 
     @Test
-    public void depositMoney() {
+    public void depositMoney() throws BankRequestException {
         Customer customer = customerService.getCustomerByMail("N1@gmail.com");
-        Account originalAccount = customerService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
-        Double balanceBefore = originalAccount.getBalance();
+        Account originalAccount = accountService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
+        BigDecimal balanceBefore = originalAccount.getBalance();
         try {
-            bankService.depositToAccount(customer, originalAccount.getAccountId(), 10);
+            bankService.depositToAccount(customer, originalAccount.getAccountId(), new BigDecimal(10));
             Account increasedAccount = accountService.getAccountById(originalAccount.getAccountId());
-            Double balanceAfter = increasedAccount.getBalance();
-            Assert.assertTrue(balanceAfter == balanceBefore + 10);
+            BigDecimal balanceAfter = increasedAccount.getBalance();
+            Assert.assertTrue(balanceAfter.equals(balanceBefore.add(new BigDecimal(10))));
         } catch (BankRequestException e) {
             Assert.fail();
             e.printStackTrace();
@@ -79,15 +82,15 @@ public class BankServiceTest {
     }
 
     @Test
-    public void withdrawMoney() {
+    public void withdrawMoney() throws BankRequestException {
         Customer customer = customerService.getCustomerByMail("N1@gmail.com");
-        Account originalAccount = customerService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
-        Double balanceBefore = originalAccount.getBalance();
+        Account originalAccount = accountService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
+        BigDecimal balanceBefore = originalAccount.getBalance();
         try {
-            bankService.withdrawFromAccount(customer, originalAccount.getAccountId(), 10);
+            bankService.withdrawFromAccount(customer, originalAccount.getAccountId(), new BigDecimal(10));
             Account decreasedAccount = accountService.getAccountById(originalAccount.getAccountId());
-            Double balanceAfter = decreasedAccount.getBalance();
-            Assert.assertTrue(balanceAfter == balanceBefore - 10);
+            BigDecimal balanceAfter = decreasedAccount.getBalance();
+            Assert.assertTrue(balanceAfter.equals(balanceBefore.subtract(new BigDecimal(10))));
         } catch (BankRequestException e) {
             Assert.fail();
             e.printStackTrace();
@@ -98,38 +101,40 @@ public class BankServiceTest {
     public void withdrawFromNotOwnerAccount() throws BankRequestException {
         Customer customer = customerService.getCustomerByMail("N1@gmail.com");
         Customer otherCustomer = customerService.getCustomerByMail("N2@gmail.com");
-        Account otherAccount = customerService.getAccountfromCustomerId(otherCustomer.getCustomerId()).get(0);
-        bankService.withdrawFromAccount(customer, otherAccount.getAccountId(), 10);
+        Account otherAccount = accountService.getAccountfromCustomerId(otherCustomer.getCustomerId()).get(0);
+        bankService.withdrawFromAccount(customer, otherAccount.getAccountId(), new BigDecimal(10));
     }
 
     @Test(expected = BankRequestException.class)
     public void notEnoughMoney() throws BankRequestException {
         Customer customer = customerService.getCustomerByMail("N2@gmail.com");
-        Account account = customerService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
-        bankService.withdrawFromAccount(customer, account.getAccountId(), account.getBalance() + 10);
+        Account account = accountService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
+        bankService.withdrawFromAccount(customer, account.getAccountId(), account.getBalance().add(new BigDecimal(10)));
     }
 
     @Test(expected = BankRequestException.class)
     public void depositNegativeMoney() throws BankRequestException {
         Customer customer = customerService.getCustomerByMail("N2@gmail.com");
-        Account account = customerService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
-        bankService.depositToAccount(customer, account.getAccountId(), -10);
+        Account account = accountService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
+        bankService.depositToAccount(customer, account.getAccountId(), new BigDecimal(-10));
     }
 
     @Test
     public void accountOperations() throws BankRequestException {
         Customer customer = customerService.getCustomerByMail("N2@gmail.com");
-        Account account = customerService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
-        bankService.depositToAccount(customer, account.getAccountId(), 10);
-        bankService.depositToAccount(customer, account.getAccountId(), 10);
-        bankService.withdrawFromAccount(customer, account.getAccountId(), 10);
+        Account account = accountService.getAccountfromCustomerId(customer.getCustomerId()).get(0);
+        bankService.depositToAccount(customer, account.getAccountId(), new BigDecimal(10));
+        bankService.depositToAccount(customer, account.getAccountId(), new BigDecimal(10));
+        bankService.withdrawFromAccount(customer, account.getAccountId(), new BigDecimal(10));
 
-        List<Operation> operations = bankService.getAccountOperation(customer,account.getAccountId());
-        Assert.assertEquals(operations.size(),3);
+        List<Operation> operations = bankService.getAccountOperation(customer, account.getAccountId());
+        // In the setUp method there is a first deposit operation of 1000
+        // Total operation: 3 deposits + 1 withdraw
+        Assert.assertEquals(4, operations.size());
         List<Operation> depositOperations = operations.stream().filter(o -> o instanceof DepositOperation).collect(Collectors.toList());
-        Assert.assertEquals(depositOperations .size(),2);
-        List<Operation> withdrawOperations = operations.stream().filter(o -> o instanceof WithdrawOperation).collect(Collectors.toList());
-        Assert.assertEquals(withdrawOperations.size(),1);
+        Assert.assertEquals(3, depositOperations.size());
+        List<Operation> withdrawOperations = operations.stream().filter(o -> o instanceof WithdrawalOperation).collect(Collectors.toList());
+        Assert.assertEquals(1, withdrawOperations.size());
     }
 
 }
