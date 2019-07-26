@@ -1,4 +1,4 @@
-# springboot-bank-demo
+# springboot-bank-demo using mapstruct
 ## API-REST
 
 | Description                  | URL                             | Type   | Input            | Security      |
